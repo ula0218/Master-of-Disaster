@@ -21,6 +21,7 @@ class AirDefense:
             "profile.managed_default_content_settings.images": 2, # 2: 禁用圖像
             "profile.managed_default_content_settings.stylesheet": 2 # 2: 禁用 CSS
         }
+        # 初始化 WebDriver 並應用選項
         chrome_options.add_experimental_option("prefs", prefs)
         self.driver = webdriver.Chrome(options=chrome_options)
 
@@ -45,7 +46,7 @@ class AirDefense:
         for city, url in self.city_urls.items():
             url = self.city_urls['Taipei_2']
             self.driver.get(url)
-
+            # print(city,url)
             wait = WebDriverWait(self.driver, 10)
 
             try:
@@ -98,26 +99,29 @@ class AirDefense:
                         selection = self.driver.find_element(By.XPATH, selection_x_path)
                         self.driver.execute_script("arguments[0].click();", selection)
 
-                        targets = self.find_list(By.XPATH, pref_x_path + '/div/div[3]/div[3]/div[2]', './/div[@class="suEOdc"]')
-                        # print([target.text for target in targets])
-                        for target in targets:
-                            self.driver.execute_script("arguments[0].click();", target)
+                        #//*[@id="legendPanel"]/div/div/div[2]/div/div/div[2]/div[2]/div/div[3]
+                        units = self.find_list(By.XPATH, pref_x_path + '/div/div[3]', './/div[@class="HzV7m-pbTTYe-JNdkSc"]')
+                        for j in range(3,3 + len(units)):
+                            targets = self.find_list(By.XPATH, pref_x_path + '/div/div[3]/div[{}]/div[2]'.format(j), './/div[@class="suEOdc"]')
+                            # print([target.text for target in targets])
+                            for target in targets:
+                                self.driver.execute_script("arguments[0].click();", target)
 
-                            infos = self.find_list(By.XPATH, '//*[@id="featurecardPanel"]/div/div/div[4]/div[1]', './/div[@class="qqvbed-p83tee"]')
-                            for info in infos:
-                                title = WebDriverWait(info, 10).until(EC.presence_of_element_located(
-                                    (By.XPATH, './/div[@class="qqvbed-p83tee-V1ur5d"]')
-                                ))
-                                content = WebDriverWait(info, 10).until(EC.presence_of_element_located(
-                                    (By.XPATH, './/div[@class="qqvbed-p83tee-lTBxed"]')
-                                ))
-                                
-                                title_text = title.text
-                                content_text = content.text
-                                print("{}: {}".format(title_text, content_text))
-                                # result_dict[title_text] = content_text
-                            print("---------------------------------")
-                            time.sleep(2)
+                                infos = self.find_list(By.XPATH, '//*[@id="featurecardPanel"]/div/div/div[4]/div[1]', './/div[@class="qqvbed-p83tee"]')
+                                for info in infos:
+                                    title = WebDriverWait(info, 10).until(EC.presence_of_element_located(
+                                        (By.XPATH, './/div[@class="qqvbed-p83tee-V1ur5d"]')
+                                    ))
+                                    content = WebDriverWait(info, 10).until(EC.presence_of_element_located(
+                                        (By.XPATH, './/div[@class="qqvbed-p83tee-lTBxed"]')
+                                    ))
+
+                                    title_text = title.text
+                                    content_text = content.text
+                                    print("{}: {}".format(title_text, content_text))
+                                    # result_dict[title_text] = content_text
+                                print("---------------------------------")
+                                time.sleep(2)
             
             except Exception as e:
                 print("其他錯誤: {}".format(e))
