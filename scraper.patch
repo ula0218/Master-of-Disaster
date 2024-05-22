@@ -1,0 +1,47 @@
+diff --cc scraper.py
+index f51d4f6,629b5a7..0000000
+--- a/scraper.py
++++ b/scraper.py
+@@@ -39,16 -56,38 +56,41 @@@ class AirDefense
+          child_elements = WebDriverWait(parent_element, 10).until(
+              EC.visibility_of_all_elements_located((type, element))
+          )
+ +
+          return child_elements
+  
++     def get_data(self, city, data_dict):
++         infos = self.find_list(By.XPATH, '//*[@id="featurecardPanel"]/div/div/div[4]/div[1]', './/div[@class="qqvbed-p83tee"]')
++         for info in infos:
++             title = WebDriverWait(info, 10).until(EC.presence_of_element_located(
++                 (By.XPATH, './/div[@class="qqvbed-p83tee-V1ur5d"]')
++             ))
++             content = WebDriverWait(info, 10).until(EC.presence_of_element_located(
++                 (By.XPATH, './/div[@class="qqvbed-p83tee-lTBxed"]')
++             ))
++ 
++             title_text = title.text
++             content_text = content.text
++             
++             # print("{}: {}".format(title_text, content_text))
++ 
++             data_dict[title_text] = content_text
++             # result_dict[title_text] = content_text
++         # print("---------------------------------")
++         
++ 
++         # print(data_dict)
++         self.datasets[city].append(data_dict)
++         # print("---------------------------------")
++ 
+      def run(self):
+  
+          for city, url in self.city_urls.items():
+-             url = self.city_urls['Taipei_2']
++             # url = self.city_urls['Taipei_2']
++             self.driver.get(url)
+              # print(city,url)
+ +            self.driver.get(url)
+ +
+              wait = WebDriverWait(self.driver, 10)
+  
+              try:

@@ -1,0 +1,1 @@
+from .language_table import lang_table
